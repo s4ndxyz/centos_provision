@@ -1,8 +1,7 @@
-# Shared
-
 # Stages
 stages:
   - quality_checks
+  - make_release
 
 # Jobs
 run_rspec:
@@ -19,3 +18,35 @@ run_rspec:
     key: vendor
     paths:
       - vendor/
+  only:
+    - /^(production)$/
+
+add_tags:
+  tags:
+    - shell
+  stage: make_release
+  script:
+    - bash ci/bin/create_git_tag.sh
+  only:
+    - /^(production)$/
+
+deploy_to_current:
+  tags:
+    - shell
+  stage: make_release
+  script:
+    #always return true so that the build does not fail if there are no changes || true
+    - git push -f origin current
+  only:
+    - /^(production)$/
+
+deploy_release_branch:
+  tags:
+    - shell
+  stage: make_release
+  variables:
+    RELEASE_VERSION: $(cat RELEASE_VERSION)
+  script:
+    - git push -f origin release-$RELEASE_VERSION
+  only:
+    - /^(production)$/
