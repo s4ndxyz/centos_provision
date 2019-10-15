@@ -35,7 +35,7 @@ deploy_to_current:
     - shell
   stage: make_release
   script:
-    - git config user.name
+    - echo $(git config user.name)
     #always return true so that the build does not fail if there are no changes || true
     - git push -f origin current
   only:
