@@ -1,3 +1,8 @@
+#Share
+before_script:
+  - export RELEASE_VERSION=`cat RELEASE_VERSION`
+  - echo $RELEASE_VERSION
+
 # Stages
 stages:
   - quality_checks
@@ -48,8 +53,6 @@ deploy_release_branch:
   tags:
     - shell
   stage: make_release
-  variables:
-    RELEASE_VERIONS: $(cat .RELEASE_VERSION)
   script:
     - echo "$RELEASE_VERSION"
     # Add the private key to bot
