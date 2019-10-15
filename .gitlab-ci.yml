@@ -51,6 +51,7 @@ deploy_release_branch:
   variables:
     RELEASE_VERSION: $(cat RELEASE_VERSION)
   script:
+    - echo $RELEASE_VERSION
     # Add the private key to bot
     - eval $(ssh-agent -s) && ssh-add <(echo "$SSH_PRIVATE_KEY") && mkdir -p ~/.ssh
     # Docker specific settings
