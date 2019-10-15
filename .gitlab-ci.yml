@@ -55,6 +55,7 @@ deploy_release_branch:
     - eval $(ssh-agent -s) && ssh-add <(echo "$SSH_PRIVATE_KEY") && mkdir -p ~/.ssh
     # Docker specific settings
     - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - chmod 600 ~/.ssh/config && chown $USER ~/.ssh/config
     # Config git to avoid first usage questions. Set the identity
     - git config --global user.email "bot@apliteni.com" && git config --global user.name "Gitlab CI"
     - git push -f -u git@gitlab.x.apli.tech:apliteni/keitaro/installer.git release-$RELEASE_VERSION
