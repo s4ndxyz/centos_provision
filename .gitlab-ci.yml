@@ -62,6 +62,6 @@ deploy_release_branch:
     - chmod 600 ~/.ssh/config && chown $USER ~/.ssh/config
     # Config git to avoid first usage questions. Set the identity
     - git config --global user.email "bot@apliteni.com" && git config --global user.name "Gitlab CI"
-    - git push -f -u git@gitlab.x.apli.tech:apliteni/keitaro/installer.git release-$RELEASE_VERSION
+    - git push -f -u git@gitlab.x.apli.tech:apliteni/keitaro/installer.git $CI_COMMIT_REF_NAME:release-$RELEASE_VERSION
   only:
     - /^(production)$/
