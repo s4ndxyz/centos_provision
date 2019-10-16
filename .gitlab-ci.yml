@@ -1,7 +1,17 @@
 #Share
+.job_template: &job_definition  # Hidden key that defines an anchor named 'job_definition'
+  script:
+    # Add the private key to bot
+    - eval $(ssh-agent -s) && ssh-add <(echo "$SSH_PRIVATE_KEY") && mkdir -p ~/.ssh
+    # Docker specific settings
+    - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - chmod 600 ~/.ssh/config && chown $USER ~/.ssh/config
+    # Config git to avoid first usage questions. Set the identity
+    - git config --global user.email "bot@apliteni.com" && git config --global user.name "Gitlab CI"
+    - git checkout $CI_COMMIT_REF_NAME
+
 before_script:
   - export RELEASE_VERSION=`cat RELEASE_VERSION`
-  - echo $RELEASE_VERSION
 
 # Stages
 stages:
@@ -35,7 +45,20 @@ add_tags:
   only:
     - /^(production)$/
 
+deploy_release_branch:
+  <<: *job_definition           # Merge the contents of the 'job_definition' alias
+  tags:
+    - shell
+  stage: make_release
+  script:
+    - echo "$RELEASE_VERSION"
+    - git push -f -u git@gitlab.x.apli.tech:apliteni/keitaro/installer.git $CI_COMMIT_REF_NAME:release-$RELEASE_VERSION
+
+  only:
+    - /^(production)$/
+
 deploy_to_current:
+  <<: *job_definition           # Merge the contents of the 'job_definition' alias
   tags:
     - shell
   stage: make_release
@@ -46,25 +69,5 @@ deploy_to_current:
     - git config --global user.email "bot@apliteni.com" && git config --global user.name "Gitlab CI"
     #always return true so that the build does not fail if there are no changes || true
     #- git push -f -u origin current
-  only:
-    - /^(production)$/
-
-deploy_release_branch:
-  tags:
-    - shell
-  stage: make_release
-  script:
-    - echo "$RELEASE_VERSION"
-    # Add the private key to bot
-    - eval $(ssh-agent -s) && ssh-add <(echo "$SSH_PRIVATE_KEY") && mkdir -p ~/.ssh
-    # Docker specific settings
-    - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - chmod 600 ~/.ssh/config && chown $USER ~/.ssh/config
-    # Config git to avoid first usage questions. Set the identity
-    - git config --global user.email "bot@apliteni.com" && git config --global user.name "Gitlab CI"
-    - git checkout $CI_COMMIT_REF_NAME
-    - git tag vv$RELEASE_VERSION
-    - git push -f -u git@gitlab.x.apli.tech:apliteni/keitaro/installer.git $CI_COMMIT_REF_NAME:release-$RELEASE_VERSION
-
   only:
     - /^(production)$/
