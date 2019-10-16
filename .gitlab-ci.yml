@@ -47,7 +47,7 @@ add_tags:
     - /^(production)$/
 
 deploy_release_branch:
-  extends: [.docker, .git_init]
+  extends: [.git_init]
   tags:
     - shell
   stage: make_release
