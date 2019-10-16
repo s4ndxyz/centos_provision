@@ -1,6 +1,8 @@
 #Share
+before_script:
+  - export RELEASE_VERSION=`cat RELEASE_VERSION`
 
-.frontend_template: &frontend_template
+.template: &template
   script:
         # Add the private key to bot
         - eval $(ssh-agent -s) && ssh-add <(echo "$SSH_PRIVATE_KEY") && mkdir -p ~/.ssh
@@ -10,9 +12,6 @@
         # Config git to avoid first usage questions. Set the identity
         - git config --global user.email "bot@apliteni.com" && git config --global user.name "Gitlab CI"
         - git checkout $CI_COMMIT_REF_NAME
-
-before_script:
-  - export RELEASE_VERSION=`cat RELEASE_VERSION`
 
 # Stages
 stages:
@@ -47,12 +46,11 @@ add_tags:
     - /^(production)$/
 
 deploy_release_branch:
-   <<: *frontend_template           # Merge the contents of the 'job_definition' alias
+  <<: *template
   tags:
     - shell
   stage: make_release
   script:
-    <<: *frontend_scripts
     - echo "$RELEASE_VERSION"
     - git push -f -u git@gitlab.x.apli.tech:apliteni/keitaro/installer.git $CI_COMMIT_REF_NAME:release-$RELEASE_VERSION
 
@@ -60,7 +58,6 @@ deploy_release_branch:
     - /^(production)$/
 
 deploy_to_current:
-  <<: *job_definition           # Merge the contents of the 'job_definition' alias
   tags:
     - shell
   stage: make_release
