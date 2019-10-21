@@ -1868,7 +1868,7 @@ stage5(){
 
 
 upgrade_packages(){
-  install_package deltarpm
+#  install_package deltarpm
   debug "Upgrading packages"
   run_command "yum update -y"
 }
