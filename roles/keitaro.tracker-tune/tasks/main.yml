@@ -13,6 +13,15 @@
     minute: "{{ 59 | random }}"
     job: "{{ php_path }} {{ keitaro_root }}/bin/cli.php geodbs:update_all"
 
+- name: Configure cron to clear old namespaced cache every week
+  cron:
+    user: "{{ keitaro_user }}"
+    name: "flush old cache"
+    weekday: "{{ 6 | random }}"
+    hour: "{{ 22 | random }}"
+    minute: "{{ 59 | random }}"
+    job: "{{ php_path }} {{ keitaro_root }}/bin/cli.php system:flush_old_cache"
+
 - name: Generate watch list if it isn't exist.
   copy:
     dest: "{{ keitaro_watch_list }}"
