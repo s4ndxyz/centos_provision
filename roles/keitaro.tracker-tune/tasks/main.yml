@@ -1,27 +1,10 @@
-- name: Configure cron to run keitaro task every minute channel 1
+- name: Configure cron to run keitaro task every minute (4 channels)
   cron:
     user: "{{ keitaro_user }}"
-    name: "keitaro cron channel 1"
-    job: "{{ php_path }} {{ keitaro_root }}/cron.php --channel=1"
-
-- name: Configure cron to run keitaro task every minute channel 2
-  cron:
-    user: "{{ keitaro_user }}"
-    name: "keitaro cron channel 2"
-    job: "{{ php_path }} {{ keitaro_root }}/cron.php --channel=2"
-
-- name: Configure cron to run keitaro task every minute channel 3
-  cron:
-    user: "{{ keitaro_user }}"
-    name: "keitaro cron channel 3"
-    job: "{{ php_path }} {{ keitaro_root }}/cron.php --channel=3"
-
-- name: Configure cron to run keitaro task every minute channel 4
-  cron:
-    user: "{{ keitaro_user }}"
-    name: "keitaro cron channel 4"
-    job: "{{ php_path }} {{ keitaro_root }}/cron.php --channel=4"
-
+    name: "keitaro cron (channel {{ item }})"
+    job: "{{ php_path }} {{ keitaro_root }}/cron.php --channel={{ item }}"
+  loop: [1, 2, 3, 4]
+    
 - name: Configure cron to update geo databases every week
   cron:
     user: "{{ keitaro_user }}"
