@@ -21,14 +21,14 @@
   register: get_latest_tracker_version
 
 - name: Upgrade Keitaro to the latest version if need
+  assert:
+      that: ansible_version.major < 2.5
   shell: >
     curl -fsSL {{ keitaro_url }}/releases/{{ get_latest_tracker_version.stdout }}/package8.tar.gz | \
       tar -xz --strip=1
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  - assert:
-      that: ansible_version.major < 2.5
   when: (get_latest_tracker_version.stdout | version_compare(get_current_tracker_version.stdout, '>')) or
         (get_current_php_ioc_version.stdout != php_ioc_version )
   notify:
@@ -36,14 +36,14 @@
     - restart roadrunner
 
 - name: Upgrade Keitaro to the latest version if need
+  assert:
+      that: ansible_version.major > 2.5
   shell: >
     curl -fsSL {{ keitaro_url }}/releases/{{ get_latest_tracker_version.stdout }}/package8.tar.gz | \
       tar -xz --strip=1
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  - assert:
-      that: ansible_version.major > 2.5
   when: (get_latest_tracker_version.stdout is version(get_current_tracker_version.stdout, '>')) or
         (get_current_php_ioc_version.stdout != php_ioc_version )
   notify:
@@ -51,20 +51,20 @@
     - restart roadrunner
 
 - name: Migrate database
+  assert:
+    that: ansible_version.major < 2.5
   command: "{{ php_path }} bin/cli.php db:migrate"
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  - assert:
-    that: ansible_version.major < 2.5
   when: "get_latest_tracker_version.stdout | version_compare(get_current_tracker_version.stdout, '>')"
 
 - name: Migrate database
+  assert:
+    that: ansible_version.major > 2.5
   command: "{{ php_path }} bin/cli.php db:migrate"
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  - assert:
-    that: ansible_version.major > 2.5
   when: "get_latest_tracker_version.stdout is version(get_current_tracker_version.stdout, '>')"
 
