@@ -27,8 +27,10 @@
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  when: ansible_version.full < "2.5" and ((get_latest_tracker_version.stdout | version_compare(get_current_tracker_version.stdout, '>')) or
-        (get_current_php_ioc_version.stdout != php_ioc_version ))
+  - assert:
+      that: ansible_version.major < 2.5
+  when: (get_latest_tracker_version.stdout | version_compare(get_current_tracker_version.stdout, '>')) or
+        (get_current_php_ioc_version.stdout != php_ioc_version )
   notify:
     - restart php-fpm
     - restart roadrunner
@@ -40,8 +42,10 @@
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  when: ansible_version.full > "2.5" and ((get_latest_tracker_version.stdout is version(get_current_tracker_version.stdout, '>')) or
-        (get_current_php_ioc_version.stdout != php_ioc_version ))
+  - assert:
+      that: ansible_version.major > 2.5
+  when: (get_latest_tracker_version.stdout is version(get_current_tracker_version.stdout, '>')) or
+        (get_current_php_ioc_version.stdout != php_ioc_version )
   notify:
     - restart php-fpm
     - restart roadrunner
@@ -51,12 +55,16 @@
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  when: ansible_version.full < "2.5" and get_latest_tracker_version.stdout | version_compare(get_current_tracker_version.stdout, '>')
+  - assert:
+    that: ansible_version.major < 2.5
+  when: "get_latest_tracker_version.stdout | version_compare(get_current_tracker_version.stdout, '>')"
 
 - name: Migrate database
   command: "{{ php_path }} bin/cli.php db:migrate"
   args:
     chdir: "{{ keitaro_root }}"
   become_user: "{{ keitaro_user }}"
-  when: ansible_version.full > "2.5" and get_latest_tracker_version.stdout is version(get_current_tracker_version.stdout, '>')
+  - assert:
+    that: ansible_version.major > 2.5
+  when: "get_latest_tracker_version.stdout is version(get_current_tracker_version.stdout, '>')"
 
