@@ -5,3 +5,5 @@
       mysql --user={{ db_user }} --password={{ db_password }} {{ db_name }}
   args:
     chdir: ../
+  async: 2592000               # 60*60*24*30 – 1 month
+  poll: 0
