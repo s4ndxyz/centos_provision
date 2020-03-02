@@ -4,7 +4,8 @@ This repository contains a bash installer and an Ansible playbook to provision n
 
 ## Compatibility
  - CentOS 7
-
+ - CentOS 8
+ 
 ## Install Keitaro with bash installer
 
 Connect to your CentOS server and run as root
